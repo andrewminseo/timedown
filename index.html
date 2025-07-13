@@ -8,36 +8,36 @@
     body {
       font-family: sans-serif;
       text-align: center;
-      background: #f0f0f0;
+      background: #ffffff;
       padding: 2em;
     }
     h1 {
-      margin-bottom: 0.5em;
+      font-size: 2.5em;
     }
     .countdowns {
       display: flex;
       justify-content: center;
-      gap: 4em;
+      gap: 5em;
       margin-top: 2em;
       flex-wrap: wrap;
     }
     .timer {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5em;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      font-size: 2em;
     }
     .label {
       font-weight: bold;
-      margin-bottom: 0.5em;
+      font-size: 1.5em;
+      margin-bottom: 0.4em;
     }
-    .time {
-      font-size: 2em;
-      color: #333;
+    .aachen-remaining {
+      margin-top: 0.3em;
+      font-size: 0.9em;
+      color: #555;
     }
     .local-time {
       margin-top: 3em;
-      font-size: 1.2em;
+      font-size: 1.3em;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -46,12 +46,14 @@
 
   <div class="countdowns">
     <div class="timer">
-      <div class="label">Until Tuesday 2:00 AM</div>
-      <div class="time" id="countdown-tuesday">Loading...</div>
+      <div class="label">Until Monday 3:00 PM</div>
+      <div id="countdown-monday">Loading...</div>
+      <div class="aachen-remaining" id="aachen-monday">Aachen: Loading...</div>
     </div>
     <div class="timer">
-      <div class="label">Until Monday 3:00 PM</div>
-      <div class="time" id="countdown-monday">Loading...</div>
+      <div class="label">Until Tuesday 2:00 AM</div>
+      <div id="countdown-tuesday">Loading...</div>
+      <div class="aachen-remaining" id="aachen-tuesday">Aachen: Loading...</div>
     </div>
   </div>
 
@@ -72,20 +74,26 @@
     const tuesday2am = getNextTarget(2, 2, 0);    // Tuesday 2:00 AM
     const monday3pm = getNextTarget(1, 15, 0);    // Monday 3:00 PM
 
+    function formatTimeDiff(target, now) {
+      const diff = target - now;
+      if (diff <= 0) return "Time's up!";
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      return `${hours}h ${minutes}m ${seconds}s`;
+    }
+
     function updateCountdowns() {
       const now = new Date();
+      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday3pm, now);
+      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday2am, now);
 
-      function formatTimeDiff(target) {
-        const diff = target - now;
-        if (diff <= 0) return "Time's up!";
-        const hours = Math.floor(diff / 3600000);
-        const minutes = Math.floor((diff % 3600000) / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        return `${hours}h ${minutes}m ${seconds}s`;
-      }
+      // Aachen time-based countdown
+      const nowAachen = new Date().toLocaleString("en-US", { timeZone: "Europe/Berlin" });
+      const aachenNow = new Date(nowAachen);
 
-      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday2am);
-      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday3pm);
+      document.getElementById("aachen-monday").textContent = "Aachen: " + formatTimeDiff(monday3pm, aachenNow);
+      document.getElementById("aachen-tuesday").textContent = "Aachen: " + formatTimeDiff(tuesday2am, aachenNow);
     }
 
     function updateAachenTime() {
@@ -96,7 +104,7 @@
         minute: "2-digit",
         second: "2-digit",
         weekday: "short",
-        hour12: false
+        hour12: true
       };
       const formatter = new Intl.DateTimeFormat("en-US", options);
       document.getElementById("aachen-time").textContent = "Aachen Time: " + formatter.format(now);
