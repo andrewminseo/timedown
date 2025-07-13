@@ -29,11 +29,6 @@
       font-size: 1.5em;
       margin-bottom: 0.4em;
     }
-    .aachen-remaining {
-      margin-top: 0.3em;
-      font-size: 0.9em;
-      color: #555;
-    }
     .local-time {
       margin-top: 3em;
       font-size: 1.3em;
@@ -46,14 +41,12 @@
 
   <div class="countdowns">
     <div class="timer">
-      <div class="label">Until Monday 3:00 PM</div>
+      <div class="label">Until Aachen Monday 10:00 PM</div>
       <div id="countdown-monday">Loading...</div>
-      <div class="aachen-remaining" id="aachen-monday">Aachen: Loading...</div>
     </div>
     <div class="timer">
-      <div class="label">Until Tuesday 2:00 AM</div>
+      <div class="label">Until Aachen Tuesday 10:00 AM</div>
       <div id="countdown-tuesday">Loading...</div>
-      <div class="aachen-remaining" id="aachen-tuesday">Aachen: Loading...</div>
     </div>
   </div>
 
@@ -62,17 +55,23 @@
   </div>
 
   <script>
-    function getNextTarget(dayOfWeek, hour, minute) {
+    function getNextAachenTarget(dayOfWeek, hour, minute) {
       const now = new Date();
-      const target = new Date(now);
-      const daysUntilTarget = (dayOfWeek + 7 - now.getDay()) % 7 || 7;
-      target.setDate(now.getDate() + daysUntilTarget);
+      const aachenNowStr = now.toLocaleString("en-US", { timeZone: "Europe/Berlin" });
+      const aachenNow = new Date(aachenNowStr);
+
+      const target = new Date(aachenNow);
+      const daysUntilTarget = (dayOfWeek + 7 - aachenNow.getDay()) % 7 || 7;
+      target.setDate(aachenNow.getDate() + daysUntilTarget);
       target.setHours(hour, minute, 0, 0);
-      return target;
+
+      // Convert Aachen target back to local time
+      const utc = target.toLocaleString("en-US", { timeZone: "UTC" });
+      return new Date(utc);
     }
 
-    const tuesday2am = getNextTarget(2, 2, 0);    // Tuesday 2:00 AM
-    const monday3pm = getNextTarget(1, 15, 0);    // Monday 3:00 PM
+    const monday10pm = getNextAachenTarget(1, 22, 0);   // Monday 22:00 Aachen time
+    const tuesday10am = getNextAachenTarget(2, 10, 0);  // Tuesday 10:00 Aachen time
 
     function formatTimeDiff(target, now) {
       const diff = target - now;
@@ -85,15 +84,8 @@
 
     function updateCountdowns() {
       const now = new Date();
-      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday3pm, now);
-      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday2am, now);
-
-      // Aachen time-based countdown
-      const nowAachen = new Date().toLocaleString("en-US", { timeZone: "Europe/Berlin" });
-      const aachenNow = new Date(nowAachen);
-
-      document.getElementById("aachen-monday").textContent = "Aachen: " + formatTimeDiff(monday3pm, aachenNow);
-      document.getElementById("aachen-tuesday").textContent = "Aachen: " + formatTimeDiff(tuesday2am, aachenNow);
+      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday10pm, now);
+      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday10am, now);
     }
 
     function updateAachenTime() {
