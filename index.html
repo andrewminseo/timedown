@@ -1,1 +1,59 @@
-read me
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Countdown to Tuesday 2:00 AM</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 20vh;
+      background: #f5f5f5;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    #countdown {
+      font-size: 3em;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Countdown to Tuesday 2:00 AM</h1>
+  <div id="countdown">Loading...</div>
+
+  <script>
+    // Set the target time: Tuesday at 2:00 AM
+    const targetDate = new Date();
+
+    // Move to next Tuesday
+    const today = new Date();
+    const day = today.getDay();
+    const diff = (2 + 7 - day) % 7 || 7; // days until next Tuesday
+    targetDate.setDate(today.getDate() + diff);
+    targetDate.setHours(2, 0, 0, 0); // set time to 2:00 AM
+
+    function updateCountdown() {
+      const now = new Date();
+      const timeLeft = targetDate - now;
+
+      if (timeLeft <= 0) {
+        document.getElementById("countdown").textContent = "Time's up!";
+        return;
+      }
+
+      const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+      document.getElementById("countdown").textContent =
+        `${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
