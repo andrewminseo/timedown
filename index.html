@@ -3,57 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Countdown to Tuesday 2:00 AM</title>
+  <title>Countdown Timers</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      padding-top: 20vh;
-      background: #f5f5f5;
+      background: #f0f0f0;
+      padding: 2em;
     }
     h1 {
-      font-size: 2em;
+      margin-bottom: 0.5em;
     }
-    #countdown {
-      font-size: 3em;
-      margin-top: 20px;
+    .countdowns {
+      display: flex;
+      justify-content: center;
+      gap: 4em;
+      margin-top: 2em;
+      flex-wrap: wrap;
+    }
+    .timer {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 0.5em;
+    }
+    .time {
+      font-size: 2em;
+      color: #333;
+    }
+    .local-time {
+      margin-top: 3em;
+      font-size: 1.2em;
     }
   </style>
 </head>
 <body>
-  <h1>Countdown to Tuesday 2:00 AM</h1>
-  <div id="countdown">Loading...</div>
+  <h1>Countdowns</h1>
+
+  <div class="countdowns">
+    <div class="timer">
+      <div class="label">Until Tuesday 2:00 AM</div>
+      <div class="time" id="countdown-tuesday">Loading...</div>
+    </div>
+    <div class="timer">
+      <div class="label">Until Monday 3:00 PM</div>
+      <div class="time" id="countdown-monday">Loading...</div>
+    </div>
+  </div>
+
+  <div class="local-time" id="aachen-time">
+    Aachen Time: Loading...
+  </div>
 
   <script>
-    // Set the target time: Tuesday at 2:00 AM
-    const targetDate = new Date();
-
-    // Move to next Tuesday
-    const today = new Date();
-    const day = today.getDay();
-    const diff = (2 + 7 - day) % 7 || 7; // days until next Tuesday
-    targetDate.setDate(today.getDate() + diff);
-    targetDate.setHours(2, 0, 0, 0); // set time to 2:00 AM
-
-    function updateCountdown() {
+    function getNextTarget(dayOfWeek, hour, minute) {
       const now = new Date();
-      const timeLeft = targetDate - now;
-
-      if (timeLeft <= 0) {
-        document.getElementById("countdown").textContent = "Time's up!";
-        return;
-      }
-
-      const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-      document.getElementById("countdown").textContent =
-        `${hours}h ${minutes}m ${seconds}s`;
+      const target = new Date(now);
+      const daysUntilTarget = (dayOfWeek + 7 - now.getDay()) % 7 || 7;
+      target.setDate(now.getDate() + daysUntilTarget);
+      target.setHours(hour, minute, 0, 0);
+      return target;
     }
 
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+    const tuesday2am = getNextTarget(2, 2, 0);    // Tuesday 2:00 AM
+    const monday3pm = getNextTarget(1, 15, 0);    // Monday 3:00 PM
+
+    function updateCountdowns() {
+      const now = new Date();
+
+      function formatTimeDiff(target) {
+        const diff = target - now;
+        if (diff <= 0) return "Time's up!";
+        const hours = Math.floor(diff / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        return `${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday2am);
+      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday3pm);
+    }
+
+    function updateAachenTime() {
+      const now = new Date();
+      const options = {
+        timeZone: "Europe/Berlin",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        weekday: "short",
+        hour12: false
+      };
+      const formatter = new Intl.DateTimeFormat("en-US", options);
+      document.getElementById("aachen-time").textContent = "Aachen Time: " + formatter.format(now);
+    }
+
+    updateCountdowns();
+    updateAachenTime();
+    setInterval(updateCountdowns, 1000);
+    setInterval(updateAachenTime, 1000);
   </script>
 </body>
 </html>
