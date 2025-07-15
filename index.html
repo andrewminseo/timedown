@@ -34,8 +34,14 @@
       font-size: 0.9em;
       color: #555;
     }
-    .local-time {
+    .local-times {
       margin-top: 3em;
+      display: flex;
+      justify-content: center;
+      gap: 4em;
+      flex-wrap: wrap;
+    }
+    .local-time {
       font-size: 1.3em;
       font-weight: bold;
     }
@@ -60,8 +66,13 @@
       <div class="novi-static">August 1 in Novi, MI</div>
     </div>
   </div>
-  <div class="local-time" id="novi-time">
-    Novi Time: Loading...
+  <div class="local-times">
+    <div class="local-time" id="novi-time">
+      Novi Time: Loading...
+    </div>
+    <div class="local-time" id="aachen-time">
+      Aachen Time: Loading...
+    </div>
   </div>
   <script>
     function getSpecificDate(year, month, day) {
@@ -116,10 +127,28 @@
       document.getElementById("novi-time").textContent = "Novi Time: " + formatter.format(now);
     }
 
+    function updateAachenTime() {
+      const now = new Date();
+      const options = {
+        timeZone: "Europe/Berlin",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour12: true
+      };
+      const formatter = new Intl.DateTimeFormat("en-US", options);
+      document.getElementById("aachen-time").textContent = "Aachen Time: " + formatter.format(now);
+    }
+
     updateCountdowns();
     updateNoviTime();
+    updateAachenTime();
     setInterval(updateCountdowns, 1000);
     setInterval(updateNoviTime, 1000);
+    setInterval(updateAachenTime, 1000);
   </script>
 </body>
 </html>
