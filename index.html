@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Countdown Timers</title>
+  <title>August 1st Countdown</title>
   <style>
     body {
       font-family: sans-serif;
@@ -13,100 +13,105 @@
     }
     h1 {
       font-size: 2.5em;
+      color: #333;
     }
-    .countdowns {
+    .countdown-container {
       display: flex;
       justify-content: center;
-      gap: 5em;
       margin-top: 2em;
-      flex-wrap: wrap;
     }
     .timer {
       font-size: 2em;
+      background: #f8f9fa;
+      padding: 2em;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .label {
       font-weight: bold;
       font-size: 1.5em;
       margin-bottom: 0.4em;
+      color: #2c3e50;
     }
-    .aachen-static {
-      margin-top: 0.3em;
+    .countdown-display {
+      font-size: 1.2em;
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .location-info {
+      margin-top: 0.5em;
       font-size: 0.9em;
-      color: #555;
+      color: #7f8c8d;
     }
     .local-time {
       margin-top: 3em;
       font-size: 1.3em;
       font-weight: bold;
+      color: #34495e;
     }
   </style>
 </head>
 <body>
-  <h1>Countdowns</h1>
-
-  <div class="countdowns">
+  <h1>Countdown to August 1st</h1>
+  <div class="countdown-container">
     <div class="timer">
-      <div class="label">Until Monday 3:00 PM</div>
-      <div id="countdown-monday">Loading...</div>
-      <div class="aachen-static">Until Aachen 10:00 PM Monday</div>
-    </div>
-    <div class="timer">
-      <div class="label">Until Tuesday 2:00 AM</div>
-      <div id="countdown-tuesday">Loading...</div>
-      <div class="aachen-static">Until Aachen 9:00 AM Tuesday</div>
+      <div class="label">Until August 1st, 2025</div>
+      <div class="countdown-display" id="countdown-august">Loading...</div>
+      <div class="location-info">Novi, Michigan Time</div>
     </div>
   </div>
-
-  <div class="local-time" id="aachen-time">
-    Aachen Time: Loading...
+  <div class="local-time" id="novi-time">
+    Novi, Michigan Time: Loading...
   </div>
-
   <script>
-    function getNextTarget(dayOfWeek, hour, minute) {
-      const now = new Date();
-      const target = new Date(now);
-      const daysUntilTarget = (dayOfWeek + 7 - now.getDay()) % 7 || 7;
-      target.setDate(now.getDate() + daysUntilTarget);
-      target.setHours(hour, minute, 0, 0);
+    function getAugust1st2025() {
+      const target = new Date(2025, 7, 1, 0, 0, 0, 0); // August 1st, 2025 at midnight
       return target;
     }
-
-    const tuesday2am = getNextTarget(2, 2, 0);    // Tuesday 2:00 AM
-    const monday3pm = getNextTarget(1, 15, 0);    // Monday 3:00 PM
-
+    
+    const august1st = getAugust1st2025();
+    
     function formatTimeDiff(target, now) {
       const diff = target - now;
-      if (diff <= 0) return "Time's up!";
-      const hours = Math.floor(diff / 3600000);
+      if (diff <= 0) return "Happy August 1st!";
+      
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
       const minutes = Math.floor((diff % 3600000) / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
-      return `${hours}h ${minutes}m ${seconds}s`;
+      
+      if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      } else {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      }
     }
-
-    function updateCountdowns() {
+    
+    function updateCountdown() {
       const now = new Date();
-      document.getElementById("countdown-monday").textContent = formatTimeDiff(monday3pm, now);
-      document.getElementById("countdown-tuesday").textContent = formatTimeDiff(tuesday2am, now);
+      document.getElementById("countdown-august").textContent = formatTimeDiff(august1st, now);
     }
-
-    function updateAachenTime() {
+    
+    function updateNoviTime() {
       const now = new Date();
       const options = {
-        timeZone: "Europe/Berlin",
+        timeZone: "America/Detroit", // Michigan timezone
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
         weekday: "short",
+        month: "short",
+        day: "numeric",
         hour12: true
       };
       const formatter = new Intl.DateTimeFormat("en-US", options);
-      document.getElementById("aachen-time").textContent = "Aachen Time: " + formatter.format(now);
+      document.getElementById("novi-time").textContent = "Novi, Michigan Time: " + formatter.format(now);
     }
-
-    updateCountdowns();
-    updateAachenTime();
-    setInterval(updateCountdowns, 1000);
-    setInterval(updateAachenTime, 1000);
+    
+    updateCountdown();
+    updateNoviTime();
+    setInterval(updateCountdown, 1000);
+    setInterval(updateNoviTime, 1000);
   </script>
 </body>
 </html>
