@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>August 1st Countdown</title>
+  <title>Countdown Timers</title>
   <style>
     body {
       font-family: sans-serif;
@@ -13,72 +13,78 @@
     }
     h1 {
       font-size: 2.5em;
-      color: #333;
     }
-    .countdown-container {
+    .countdowns {
       display: flex;
       justify-content: center;
+      gap: 3em;
       margin-top: 2em;
+      flex-wrap: wrap;
     }
     .timer {
       font-size: 2em;
-      background: #f8f9fa;
-      padding: 2em;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
     .label {
       font-weight: bold;
       font-size: 1.5em;
       margin-bottom: 0.4em;
-      color: #2c3e50;
     }
-    .countdown-display {
-      font-size: 1.2em;
-      color: #e74c3c;
-      font-weight: bold;
-    }
-    .location-info {
-      margin-top: 0.5em;
+    .novi-static {
+      margin-top: 0.3em;
       font-size: 0.9em;
-      color: #7f8c8d;
+      color: #555;
     }
     .local-time {
       margin-top: 3em;
       font-size: 1.3em;
       font-weight: bold;
-      color: #34495e;
     }
   </style>
 </head>
 <body>
-  <h1>Countdown to August 1st</h1>
-  <div class="countdown-container">
+  <h1>Novi Michigan Countdowns</h1>
+  <div class="countdowns">
     <div class="timer">
-      <div class="label">Until August 1st, 2025</div>
-      <div class="countdown-display" id="countdown-august">Loading...</div>
-      <div class="location-info">Novi, Michigan Time</div>
+      <div class="label">Until July 30</div>
+      <div id="countdown-july30">Loading...</div>
+      <div class="novi-static">July 30 in Novi, MI</div>
+    </div>
+    <div class="timer">
+      <div class="label">Until July 31</div>
+      <div id="countdown-july31">Loading...</div>
+      <div class="novi-static">July 31 in Novi, MI</div>
+    </div>
+    <div class="timer">
+      <div class="label">Until August 1</div>
+      <div id="countdown-august1">Loading...</div>
+      <div class="novi-static">August 1 in Novi, MI</div>
     </div>
   </div>
   <div class="local-time" id="novi-time">
-    Novi, Michigan Time: Loading...
+    Novi Time: Loading...
   </div>
   <script>
-    function getAugust1st2025() {
-      const target = new Date(2025, 7, 1, 0, 0, 0, 0); // August 1st, 2025 at midnight
+    function getSpecificDate(year, month, day) {
+      // Create date in Novi, MI timezone (Eastern Time)
+      const target = new Date();
+      target.setFullYear(year, month - 1, day); // month is 0-indexed
+      target.setHours(0, 0, 0, 0); // Start of day
       return target;
     }
-    
-    const august1st = getAugust1st2025();
-    
+
+    // Set target dates for 2025
+    const july30 = getSpecificDate(2025, 7, 30);
+    const july31 = getSpecificDate(2025, 7, 31);
+    const august1 = getSpecificDate(2025, 8, 1);
+
     function formatTimeDiff(target, now) {
       const diff = target - now;
-      if (diff <= 0) return "Happy August 1st!";
+      if (diff <= 0) return "Time's up!";
       
-      const days = Math.floor(diff / 86400000);
-      const hours = Math.floor((diff % 86400000) / 3600000);
-      const minutes = Math.floor((diff % 3600000) / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
       if (days > 0) {
         return `${days}d ${hours}h ${minutes}m ${seconds}s`;
@@ -86,16 +92,18 @@
         return `${hours}h ${minutes}m ${seconds}s`;
       }
     }
-    
-    function updateCountdown() {
+
+    function updateCountdowns() {
       const now = new Date();
-      document.getElementById("countdown-august").textContent = formatTimeDiff(august1st, now);
+      document.getElementById("countdown-july30").textContent = formatTimeDiff(july30, now);
+      document.getElementById("countdown-july31").textContent = formatTimeDiff(july31, now);
+      document.getElementById("countdown-august1").textContent = formatTimeDiff(august1, now);
     }
-    
+
     function updateNoviTime() {
       const now = new Date();
       const options = {
-        timeZone: "America/Detroit", // Michigan timezone
+        timeZone: "America/Detroit", // Eastern Time (Novi, MI)
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
@@ -105,12 +113,12 @@
         hour12: true
       };
       const formatter = new Intl.DateTimeFormat("en-US", options);
-      document.getElementById("novi-time").textContent = "Novi, Michigan Time: " + formatter.format(now);
+      document.getElementById("novi-time").textContent = "Novi Time: " + formatter.format(now);
     }
-    
-    updateCountdown();
+
+    updateCountdowns();
     updateNoviTime();
-    setInterval(updateCountdown, 1000);
+    setInterval(updateCountdowns, 1000);
     setInterval(updateNoviTime, 1000);
   </script>
 </body>
